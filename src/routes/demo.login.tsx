@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
@@ -13,22 +12,97 @@ import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Spinner } from "#/components/ui/spinner";
 import { usePasswordHook } from "#/hooks/usePassword";
+import { store } from "#/store/store";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChromeIcon, EyeClosedIcon, EyeIcon } from "lucide-react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { ArrowLeftIcon, EyeClosedIcon, EyeIcon, RotateCw } from "lucide-react";
+import { useAppStore } from "magos/react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/demo/login")({
   component: RouteComponent,
+  errorComponent: ({ error }) => {
+    return (
+      <div className="px-4 py-2 flex flex-col justify-center items-center gap-8 h-content">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-destructive">
+            Oop! Something went wrong!
+          </h2>
+          <p className="text-destructive-foreground">
+            {error instanceof Error
+              ? error.message
+              : "We encountered an unexpected error while loading the exams."}
+          </p>
+        </div>
+        <div className="flex justify-center items-center gap-4">
+          <Button onClick={() => window.location.reload()}>
+            <RotateCw /> Try Again
+          </Button>
+          <Button variant="outline" onClick={() => window.history.back()}>
+            <ArrowLeftIcon /> Go back
+          </Button>
+        </div>
+      </div>
+    );
+  },
 });
 
 function RouteComponent() {
+  const router = useRouter();
+  const [, actions] = useAppStore(store.user);
+  const { setUser, setLoading } = actions;
+
   const form = useForm({
     defaultValues: {
-      identifier: "",
+      identicator: "",
       password: "",
       isRemember: false,
     } as LoginType,
     validators: { onChange: loginSchema, onBlur: loginSchema },
+    onSubmit: async ({ value }) => {
+      setLoading("loading");
+      toast.info("Logging in...");
+      try {
+        const { identicator, password, isRemember } = value;
+        console.log(import.meta.env.VITE_API_URL);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ identicator, password, isRemember }),
+          credentials: "include",
+        });
+
+        const contentType = res.headers.get("content-type");
+
+        if (!contentType || !contentType.includes("application/json")) {
+          const errorMsg =
+            "Error when connect to server. Please try again later.";
+          toast.error(errorMsg);
+          setLoading("fail");
+          throw new Error(errorMsg);
+        }
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          const errMsg = data.message;
+          toast.error(errMsg);
+          setLoading("fail");
+          return errMsg
+        }
+
+        toast.success(data.message);
+        setUser(data);
+        setLoading("success");
+        router.navigate({ to: "/" });
+      } catch (error) {
+        if (error instanceof Error) toast.error(error?.message);
+        else toast.error("Loggin failed.");
+        throw error;
+      }
+    },
   });
 
   const { showPassword, toggleVisiblity, getType } = usePasswordHook();
@@ -45,12 +119,13 @@ function RouteComponent() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 form.handleSubmit();
               }}
               className="space-y-4"
             >
               <form.Field
-                name="identifier"
+                name="identicator"
                 children={({ name, state, handleChange, handleBlur }) => (
                   <div className="space-y-1">
                     <Input
@@ -116,9 +191,9 @@ function RouteComponent() {
                     </div>
                   )}
                 />
-                <Link to="/reset-password" className="text-primary">
-                  Forgot password?
-                </Link>
+                {/* <Link to="/reset-password" className="text-primary"> */}
+                <Button variant="link">Forgot password?</Button>
+                {/* </Link> */}
               </div>
               <form.Subscribe
                 selector={(state) => [state.canSubmit, state.isSubmitting]}

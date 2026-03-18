@@ -18,26 +18,27 @@ export const navItems: NavItems = [
   },
   {
     name: "Skills",
-    href: "/skills",
+    // href: "/skills",
     icon: CompassIcon,
     children: [
       {
         name: "Listening",
+        href: "/demo/skills",
         icon: HeadphonesIcon,
       },
       {
         name: "Speaking",
-        href: "/skills/speaking",
+        href: "/demo/skills",
         icon: Mic2Icon,
       },
       {
         name: "Reading",
-        href: "/skills/reading",
+        href: "/demo/skills",
         icon: BookOpen,
       },
       {
         name: "Writing",
-        href: "/skills/writing",
+        href: "/demo/skills",
         icon: PenIcon,
       },
     ],

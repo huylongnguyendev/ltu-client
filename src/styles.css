@@ -141,4 +141,12 @@
     display: block;
     background-color: #f0f0f0; /* Màu nền nhẹ khi chưa có ảnh */
   }
+
+  .h-content {
+    @apply min-h-[calc(100dvh-61px)];
+  }
+
+  .basic-grid {
+    @apply grid md:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
 }

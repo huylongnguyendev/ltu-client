@@ -2,7 +2,7 @@ import { identificationSchema, passwordSchema } from "#/schema/form.schema";
 import z from "zod";
 
 export const loginSchema = z.object({
-  identifier: identificationSchema,
+  identicator: identificationSchema,
   password: passwordSchema,
   isRemember: z.boolean(),
 });

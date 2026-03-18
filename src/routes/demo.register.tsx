@@ -3,23 +3,25 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChromeIcon, EyeClosedIcon, EyeIcon } from "lucide-react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { registerSchema, type RegisterType } from "#/@types/register.type";
 import { Input } from "#/components/ui/input";
 import { Spinner } from "#/components/ui/spinner";
 import { usePasswordHook } from "#/hooks/usePassword";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/demo/register")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const router = useRouter();
+
   const form = useForm({
     defaultValues: {
       firstName: "",
@@ -32,6 +34,47 @@ function RouteComponent() {
     validators: {
       onChange: registerSchema,
       onBlur: registerSchema,
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        const { email, firstName, lastName, username, password } = value;
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/register`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              firstName,
+              lastName,
+              username,
+              password,
+            }),
+          },
+        );
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const errorMsg =
+            "Error when connect to server. Please try again later.";
+          toast.error(errorMsg);
+          throw new Error(errorMsg);
+        }
+
+        const data = await res.json();
+        if (!res.ok) {
+          const errMsg = data.message;
+          toast.error(errMsg);
+          throw new Error(errMsg);
+        }
+
+        toast.success(data.message);
+        router.navigate({ to: "/demo/login" });
+      } catch (error) {
+        if (error instanceof Error) toast.error(error?.message);
+        else toast.error("Register failed.");
+      }
     },
   });
 
