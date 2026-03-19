@@ -13,9 +13,11 @@ function Auth({ postion }: { postion: keyof typeof currentPosition }) {
   const [user] = useAppStore(store.user);
 
   const isLogged = !!user?.user?.id;
+
+  if (isLogged) return null;
+
   return (
     <>
-      {isLogged && (
         <div
           className={cn("flex items-center gap-1", currentPosition[postion])}
         >
@@ -26,7 +28,6 @@ function Auth({ postion }: { postion: keyof typeof currentPosition }) {
             <Button>Register</Button>
           </Link>
         </div>
-      )}
     </>
   );
 }
