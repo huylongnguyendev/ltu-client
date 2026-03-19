@@ -59,7 +59,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       } catch (err) {
         // Nếu lỗi 401 hoặc lỗi mạng, ta im lặng (hoặc xóa user cũ trong store)
         console.warn("Khởi tạo: Chưa đăng nhập");
-        setUser.setUser(null);
       } finally {
         // 2. Đánh dấu là đã check xong, bất kể thành công hay thất bại
         setHasCheckedAuth(true);

@@ -5,14 +5,26 @@ import { createBox } from "magos";
 export interface UserState {
   loading: "idle" | "loading" | "success" | "fail";
   message: string;
-  user: User | null;
+  user: User;
   token: Token;
 }
 
 const initialState = {
   message: "",
   loading: "idle",
-  user: null,
+  user: {
+    wpUserId: null,
+    email: "",
+    firstName: "",
+    lastName: "",
+    role: "STUDENT",
+    img: null,
+    username: "",
+    id: null,
+    createdAt: "",
+    updatedAt: "",
+    fullName: "",
+  },
   token: {
     access_token: "",
     access_time: "",
