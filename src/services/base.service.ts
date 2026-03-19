@@ -22,7 +22,7 @@ baseApiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Chỉ chạy logic refresh cho các API khác (ví dụ: /skills, /projects...)
+    // Chỉ chạy logic refresh cho các API khác (ví dụ: /skills,)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
