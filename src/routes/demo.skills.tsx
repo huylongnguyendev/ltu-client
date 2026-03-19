@@ -64,7 +64,7 @@ export const Route = createFileRoute("/demo/skills")({
     if (search) queryParams.append("search", search);
     if (sort) queryParams.append("sort", sort);
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}?${queryParams}`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/exam?${queryParams}`);
 
     if (res.status === 401) throw redirect({ to: "/demo/login" });
 
