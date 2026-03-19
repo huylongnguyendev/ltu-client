@@ -32,7 +32,7 @@ baseApiClient.interceptors.response.use(
       } catch (refreshError) {
         // Nếu ngay cả refresh token cũng hết hạn (ví dụ sau 7 ngày)
         // Xóa trạng thái đăng nhập và chuyển về trang Login
-        window.location.href = "/login";
+        window.location.href = "/demo/login";
         return Promise.reject(refreshError);
       }
     }
