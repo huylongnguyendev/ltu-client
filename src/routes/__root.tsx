@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import Header from "#/components/header/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import baseApiClient from "#/services/base.service";
 import { useAppStore } from "magos/react";
 import { store } from "#/store/store";
@@ -48,22 +48,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const matches = useMatches();
   const hideLayout = matches.some((match) => match.staticData?.hideLayout);
   const [, setUser] = useAppStore(store.user);
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const initAuth = async () => {
       try {
-        // Gọi một API nhẹ nhàng như /auth/me hoặc /profile
+        // Chỉ gọi API này đúng 1 lần khi ứng dụng khởi chạy
         const res = await baseApiClient.get("/auth/me");
         setUser.setUser(res.data);
-        // Nếu thành công, set thông tin User vào Store của ông
       } catch (err) {
-        // Nếu lỗi 401, Interceptor của ông sẽ tự chạy /refresh.
-        // Nếu refresh cũng tạch thì nó mới đẩy về /login.
-        console.error("Chưa đăng nhập hoặc hết hạn");
+        // Nếu lỗi 401 hoặc lỗi mạng, ta im lặng (hoặc xóa user cũ trong store)
+        console.warn("Khởi tạo: Chưa đăng nhập");
+        setUser.setUser(null);
+      } finally {
+        // 2. Đánh dấu là đã check xong, bất kể thành công hay thất bại
+        setHasCheckedAuth(true);
       }
     };
 
-    checkAuth();
+    initAuth();
   }, []);
 
   return (
