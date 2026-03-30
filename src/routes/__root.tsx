@@ -47,26 +47,25 @@ const queryClient = new QueryClient();
 function RootDocument({ children }: { children: React.ReactNode }) {
   const matches = useMatches();
   const hideLayout = matches.some((match) => match.staticData?.hideLayout);
-  const [, setUser] = useAppStore(store.user);
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+  const [, payload] = useAppStore(store.user);
 
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        // Chỉ gọi API này đúng 1 lần khi ứng dụng khởi chạy
-        const res = await baseApiClient.get("/auth/me");
-        setUser.setUser(res.data);
-      } catch (err) {
-        // Nếu lỗi 401 hoặc lỗi mạng, ta im lặng (hoặc xóa user cũ trong store)
-        console.warn("Khởi tạo: Chưa đăng nhập");
-      } finally {
-        // 2. Đánh dấu là đã check xong, bất kể thành công hay thất bại
-        setHasCheckedAuth(true);
-      }
-    };
-
-    initAuth();
-  }, []);
+  if (typeof window !== "undefined") {
+    useEffect(() => {
+      const checkAuth = async () => {
+        try {
+          const response = await baseApiClient.get("/auth/me");
+          if (response.status === 200) {
+            payload.setUser(response.data);
+          } else {
+            console.log("User is not authenticated");
+          }
+        } catch (error) {
+          console.error("Error checking authentication:", error);
+        }
+      };
+      checkAuth();
+    }, []);
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>

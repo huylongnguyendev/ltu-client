@@ -28,8 +28,10 @@ function RouteComponent() {
       lastName: "",
       username: "",
       email: "",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
+      userCode: "",
     } as RegisterType,
     validators: {
       onChange: registerSchema,
@@ -37,7 +39,15 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const { email, firstName, lastName, username, password } = value;
+        const {
+          email,
+          firstName,
+          lastName,
+          username,
+          password,
+          phoneNumber,
+          userCode,
+        } = value;
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/auth/register`,
           {
@@ -51,6 +61,8 @@ function RouteComponent() {
               lastName,
               username,
               password,
+              phoneNumber,
+              userCode,
             }),
           },
         );
@@ -178,6 +190,27 @@ function RouteComponent() {
                 )}
               />
               <form.Field
+                name="phoneNumber"
+                children={({ name, state, handleChange, handleBlur }) => (
+                  <div className="space-y-1">
+                    <Input
+                      name={name}
+                      placeholder="Phone Number"
+                      type="tel"
+                      value={state.value}
+                      onChange={(e) => handleChange(e.target.value)}
+                      onBlur={handleBlur}
+                    />
+                    {state.meta.errors.length > 0 &&
+                      (state.meta.isDirty || state.meta.isTouched) && (
+                        <p className="text-xs text-destructive">
+                          {state.meta.errors[0]?.message}
+                        </p>
+                      )}
+                  </div>
+                )}
+              />
+              <form.Field
                 name="password"
                 children={({ name, state, handleChange, handleBlur }) => (
                   <div className="space-y-1">
@@ -234,6 +267,27 @@ function RouteComponent() {
                         {showPassword[name] ? <EyeClosedIcon /> : <EyeIcon />}
                       </Button>
                     </div>
+                    {state.meta.errors.length > 0 &&
+                      (state.meta.isDirty || state.meta.isTouched) && (
+                        <p className="text-xs text-destructive">
+                          {state.meta.errors[0]?.message}
+                        </p>
+                      )}
+                  </div>
+                )}
+              />
+              <form.Field
+                name="userCode"
+                children={({ name, state, handleChange, handleBlur }) => (
+                  <div className="space-y-1">
+                    <Input
+                      name={name}
+                      placeholder="User Code"
+                      type="string"
+                      value={state.value}
+                      onChange={(e) => handleChange(e.target.value)}
+                      onBlur={handleBlur}
+                    />
                     {state.meta.errors.length > 0 &&
                       (state.meta.isDirty || state.meta.isTouched) && (
                         <p className="text-xs text-destructive">

@@ -27,8 +27,17 @@ export const registerSchema = z
       .trim(),
     username: usernameSchema,
     email: emailSchema,
+    phoneNumber: z
+      .string()
+      .min(1, "Phone number is required")
+      .regex(
+        /^(0|\+84)(\d{9})$/,
+        "Invalid phone number format (e.g. 0912345678)",
+      )
+      .trim(),
     password: passwordSchema,
     confirmPassword: z.string().trim(),
+    userCode: z.string().optional(),
   })
   .refine((data) => data.confirmPassword === data.password, {
     message: "Passwords do not match",
