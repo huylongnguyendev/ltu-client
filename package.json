@@ -26,6 +26,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "idb-keyval": "^6.2.2",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.577.0",
     "magos": "^1.0.5",
     "media-chrome": "^4.18.0",

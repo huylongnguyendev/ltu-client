@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import Header from "#/components/header/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import baseApiClient from "#/services/base.service";
 import { useAppStore } from "magos/react";
 import { store } from "#/store/store";
